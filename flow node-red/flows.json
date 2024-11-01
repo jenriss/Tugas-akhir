@@ -1,0 +1,237 @@
+[
+    {
+        "id": "83885cdcfba23bd0",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "ba3421bb93a01f45",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "df00cde55384e7e4",
+        "type": "mqtt-broker",
+        "name": "localhost",
+        "broker": "192.168.80.105",
+        "port": "1883",
+        "clientid": "TEST",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "5",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "be1b91edcbdbfd49",
+        "type": "MySQLdatabase",
+        "name": "m_c_potato",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "m_c_potato",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "c09009abc70bcbdf",
+        "type": "mqtt in",
+        "z": "83885cdcfba23bd0",
+        "name": "",
+        "topic": "sensor/ultrasonic",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "df00cde55384e7e4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 260,
+        "wires": [
+            [
+                "2de9ebad8815e22e"
+            ]
+        ]
+    },
+    {
+        "id": "368f9c077b6f7f36",
+        "type": "debug",
+        "z": "83885cdcfba23bd0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "2de9ebad8815e22e",
+        "type": "function",
+        "z": "83885cdcfba23bd0",
+        "name": "m_c_potato",
+        "func": "// Memasukkan data yang akan dimasukkan ke dalam database\nvar sensor_id = \"sensor_ultrasonic\";\nvar water_level = msg.payload.relative_distance_cm;\n\n// Menyiapkan query parameterized untuk memasukkan data ke dalam tabel\nvar insertQuery = \"INSERT INTO water_level (id, value) VALUES (?, ?)\";\nvar queryValues = [sensor_id, water_level];\n\n// Mengatur properti pesan untuk node MySQL\nmsg.topic = insertQuery;\nmsg.payload = queryValues;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 260,
+        "wires": [
+            [
+                "5f7d548b1684dc65"
+            ]
+        ]
+    },
+    {
+        "id": "5f7d548b1684dc65",
+        "type": "mysql",
+        "z": "83885cdcfba23bd0",
+        "mydb": "be1b91edcbdbfd49",
+        "name": "m_c_potato",
+        "x": 670,
+        "y": 260,
+        "wires": [
+            [
+                "368f9c077b6f7f36"
+            ]
+        ]
+    },
+    {
+        "id": "424d45aa79fbb9d0",
+        "type": "mqtt in",
+        "z": "83885cdcfba23bd0",
+        "name": "",
+        "topic": "sensor/soilmoisture",
+        "qos": "0",
+        "datatype": "json",
+        "broker": "df00cde55384e7e4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 360,
+        "wires": [
+            [
+                "9c61b25f4b8a8df7"
+            ]
+        ]
+    },
+    {
+        "id": "42384543c9c050fe",
+        "type": "debug",
+        "z": "83885cdcfba23bd0",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 910,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "9c61b25f4b8a8df7",
+        "type": "function",
+        "z": "83885cdcfba23bd0",
+        "name": "m_c_potato",
+        "func": "// Menyiapkan data yang akan dimasukkan ke dalam database\nvar sensor_id = msg.payload.sensor_id;\nvar soil_moisture = msg.payload.soil_moisture;\n\n// Menyiapkan query parameterized untuk memasukkan data ke dalam tabel\nvar insertQuery = \"INSERT INTO soil_moisture (id, value) VALUES (?, ?)\";\nvar queryValues = [sensor_id, soil_moisture];\n\n// Mengirimkan query dan nilai parameter ke node MySQL\nmsg.topic = insertQuery;\nmsg.payload = queryValues;\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 360,
+        "wires": [
+            [
+                "7a4f03947e22bec0"
+            ]
+        ]
+    },
+    {
+        "id": "7a4f03947e22bec0",
+        "type": "mysql",
+        "z": "83885cdcfba23bd0",
+        "mydb": "be1b91edcbdbfd49",
+        "name": "m_c_potato",
+        "x": 670,
+        "y": 360,
+        "wires": [
+            [
+                "42384543c9c050fe"
+            ]
+        ]
+    },
+    {
+        "id": "4a0704e9a7c8e01a",
+        "type": "debug",
+        "z": "ba3421bb93a01f45",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 480,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "4a92bd8219ec6bc1",
+        "type": "mqtt in",
+        "z": "ba3421bb93a01f45",
+        "name": "",
+        "topic": "topic/perangkat1",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "df00cde55384e7e4",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 200,
+        "y": 200,
+        "wires": [
+            [
+                "4a0704e9a7c8e01a"
+            ]
+        ]
+    }
+]
